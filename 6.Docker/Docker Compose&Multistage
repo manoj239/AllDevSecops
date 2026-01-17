@@ -45,13 +45,3 @@ FROM gcr.io/distroless/python3
 WORKDIR /app
 COPY --from=builder /app /app
 CMD ["app.py"]
--------------------------------------------------------
-🔹 Agile Azure Dashboards
-In Azure DevOps, dashboards are a visual workspace that helps teams and managers track progress and manage work.
-Key components you’ll commonly see:
-Work Items – Individual tasks, bugs, user stories, or features to be completed.
-Backlogs – Ordered lists of work items that represent the product roadmap.
-Boards (Kanban/Scrum boards) – Visual representation of workflow stages (To Do → In Progress → Done).
-Sprints – Iteration-based work planning (usually 2–3 weeks).
-Queries – Customized filters to track specific sets of work items.
-In this backlog, we will add everything , so that we can able to know, how much time will it take to take the each  task and how many tasks are present 
