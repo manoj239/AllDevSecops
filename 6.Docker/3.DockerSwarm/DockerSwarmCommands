@@ -1,0 +1,15 @@
+https://github.com/docker/compose
+Below are the commands used to set up docker compose
+cd /usr/local/bin  
+wget https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-linux-x86_64
+mv docker-compose-linux-x86_64 docker-compose
+chmod 700 docker-compose
+cd
+docker-compose
+git clone https://github.com/dockersamples/example-voting-app compose
+cd compose/
+docker-compose up 
+docker-compose down
+#cd vote/
+#ll
+#nano templates/index.html

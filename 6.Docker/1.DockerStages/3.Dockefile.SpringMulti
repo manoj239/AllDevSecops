@@ -1,0 +1,13 @@
+# Stage 1: Create the final image with the built application
+FROM maven:3.6.3-openjdk-11 AS build-stage
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn package -DskipTests
+
+# Stage 2: Create the final image with the built application
+FROM openjdk:11-jre-slim as image-stage
+WORKDIR /app
+COPY --from=build-stage /app/target/spring-petclinic-2.7.3.jar .
+EXPOSE 8080
+CMD ["java", "-jar", "spring-petclinic-2.7.3.jar"]

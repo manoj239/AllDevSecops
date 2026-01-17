@@ -1,0 +1,185 @@
+trigger:
+  branches:
+    include:
+      - development
+      - uat
+      - production
+    exclude: ["master", "feature*","releases/*"]
+  paths:
+    exclude:
+      - demofile-exclude.txt
+      - megastar*
+      - superstar-*
+
+pool: 
+  name: LinuxAgentPool
+  demands:
+    - Java -equals Yes
+    - Terraform -equals Yes
+
+variables: 
+  global_version: '1.0.0'
+  global_email: 'globalvar@gmail.com'
+  azure_dev_sub: '9ce91e05-4b9e-4a42-95c1-4385c54920c6'
+  azure_prod_sub: '298f2c19-01b4-4195-b821-e3d8fc25c2a8'
+  isDev: $[eq(variables['Build.SourceBranch'], 'refs/heads/development')]
+  isProd: $[eq(variables['Build.SourceBranch'], 'refs/heads/production')]
+
+stages:
+  - stage: CheckingTheADOAgentAndToolsStatus
+    condition: or(eq(variables.isProd, true), eq(variables.isDev, true))
+    pool:
+      name: LinuxAgentPool
+      demands:
+        - Java -equals Yes
+        - Terraform -equals Yes
+        - Agent.Name -equals ip-10-0-2-196
+    variables:
+      stage_version: "2.0.0"
+      stage_email: 'stage1@gmail.com'
+    jobs:
+      - job: CheckingTerraformAndPacker
+        variables:
+          job_version: '3.0.0'
+          job_email: 'sreeaws@gmail.com'
+        timeoutInMinutes: 5
+        steps:
+          - script: echo $(Build.BuildId)
+            displayName: 'Display The Build-ID'
+          - script: terraform version && packer version
+            displayName: 'Display Terraform & Packer Version'
+
+      #- job: CheckingDocker
+      #  dependsOn: CheckingTerraformAndPacker
+      #  variables:
+      #    job_version: '3.0.0'
+      #    job_email: 'sreeaws@gmail.com'
+      #  timeoutInMinutes: 5
+      #  steps:
+      #    - script: |
+      #        sudo docker version
+      #        sudo docker ps
+      #        sudo docker images
+      #        sudo docker ps -a
+      #      displayName: 'Display Docker Version'
+
+      #- job: CheckingAnsibleAndTrivy
+      #  dependsOn: CheckingDocker
+      #  variables:
+      #    job_version: '3.0.0'
+      #    job_email: 'job3@gmail.com'
+      #  timeoutInMinutes: 5
+      #  steps:
+      #    - script: ansible --version && trivy --version
+      #      displayName: 'Display Ansible & Trivy Version'
+
+  - stage: SASTWithSonarQube
+    condition: and(succeeded(), eq(variables.isDev, true))
+    pool:
+      name: LinuxAgentPool
+      demands:
+        - Terraform -equals Yes
+    jobs:
+      - job: RunningSASTWithSonarqube
+        timeoutInMinutes: 10
+        steps:
+          - script: |
+              git config --global credential.helper store
+              echo "https://manojkumarborra9494:$(GIT_PAT)@dev.azure.com" > ~/.git-credentials
+            displayName: "Configure Git Credentials"
+          # SonarQube User Token need to be generated and used in the ServiceConnection.
+          # Also change name of the project and artifactId(line 6 & 14) to
+          # ado-spring-boot-app-dev in POM.
+          # No need to create a project in sonarqube as its created automatically.
+          - task: SonarQubePrepare@7
+            inputs:
+              SonarQube: 'sonarqube-service-connection'
+              scannerMode: 'Other'
+              # projectKey: 'sqp_63da7bac31bd4496f2ee1170156659ea8c782c28' - NotNeeded
+              # projectName: 'ado-spring-boot-app-dev' - NotNeeded
+              projectVersion: '$(Build.BuildId)'
+            displayName: "Preparing SonarQube Config"
+          - task: Maven@4
+            inputs:
+              mavenPomFile: 'pom.xml'
+              publishJUnitResults: false
+              javaHomeOption: 'JDKVersion'
+              mavenVersionOption: 'Default'
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              sonarQubeRunAnalysis: true
+              sqMavenPluginVersionChoice: 'latest'
+            displayName: "Running SonarQube Maven Analysis"
+            # Publish Report In Build Extensions
+          - task: SonarQubePublish@7
+            inputs:
+              pollingTimeoutSec: '300'
+            displayName: "Publish Qualitygate Report"
+            # Sonarqube webhook is not needed for Azure DevOps.
+            # Below plugin belong to "Plugins Pipelines Vendor Is Working"
+          - task: sonar-buildbreaker@9
+            inputs:
+             SonarQube: 'sonarqube-service-connection'
+            displayName: "SAST Job Fail or Pass"
+  
+  - stage: BuildingJavaCodeWithMavenCopyArtificatoryToJFrog
+    condition: or(eq(variables.isProd, true), eq(variables.isDev, true))
+    pool:
+     name: LinuxAgentPool
+     demands:
+      - Terraform -equals Yes
+    jobs:
+    - job: BuildingJavaCodeJob
+      timeoutInMinutes: 5
+      steps:
+        - script: ls -al && pwd && rm -rf /home/adminsree/.m2/settings.xml
+          displayName: 'List Files & Current Working Directory'
+        - task: DownloadSecureFile@1
+          inputs:
+            secureFile: 'settings.xml'
+        - task: CopyFiles@2
+          inputs:
+            SourceFolder: '$(Agent.TempDirectory)'
+            Contents: '**'
+            TargetFolder: '/home/adminsree/.m2'
+        - script: mvn versions:set -DnewVersion=Dev-2.0.$(Build.BuildId)
+          displayName: 'Set Maven Build Version'
+        - script: mvn -DskipTests=true clean package install && ls -al
+          displayName: 'Run the maven build and install'
+        - script: mvn -DskipTests=true deploy && ls -al
+          displayName: 'Run the maven deploy to Jfrog Artificatory'
+          continueOnError: true
+        - script: ls -al && cp /home/adminsree/myagent/_work/1/s/target/ado-spring-boot-app-dev-Dev-2.0.$(Build.BuildId).jar ROOT$(Build.BuildId).jar && ls -al
+          displayName: 'List Files & Rename ROOT.jar'   
+        - script: rm -rf /artifacts/*.jar && cp ROOT$(Build.BuildId).jar /artifacts && ls -al /artifacts
+          displayName: 'Copy Artifact To Folder'
+        - task: CopyFiles@2
+          inputs:
+            Contents: 'ROOT$(Build.BuildId).jar'
+            TargetFolder: '$(Build.ArtifactStagingDirectory)'
+            OverWrite: true
+          displayName: 'Copying JAR file to ArtifactStagingDirector'
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'ROOT$(Build.BuildId).jar'
+            publishLocation: 'Container'
+          displayName: 'Publishing JAR Artifact.'
+
+  - stage: CopyingArtifactsToAzureAndAws
+    condition: and(succeeded(), eq(variables.isDev, true))
+    jobs:
+      - job: CopyFilesToAzureBlob
+        timeoutInMinutes: 5
+        steps:
+          - checkout: none
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: 'azure-service-connection'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az storage blob upload-batch --account-name devopsb42adoartifacts --source . --destination $web
+            displayName: 'Upload Springboot Artifacts To Azure Blob'
+            continueOnError: true 
+  

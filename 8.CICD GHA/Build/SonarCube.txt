@@ -1,0 +1,60 @@
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list'
+wget -q https://www.postgresql.org/media/keys/ACCC4CF8.asc -O - | sudo apt-key add -
+sudo apt install postgresql postgresql-contrib -y
+sudo systemctl start postgresql
+sudo passwd postgres
+su - postgres
+createuser sonar
+psql
+ALTER USER sonar WITH ENCRYPTED password 'my_strong_password';
+CREATE DATABASE sonarqube OWNER sonar;
+GRANT ALL PRIVILEGES ON DATABASE sonarqube to sonar;
+\q
+exit
+
+sudo apt-get install zip -y
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.7.1.62043.zip
+sudo unzip sonarqube-9.7.1.62043.zip
+sudo mv sonarqube-9.7.1.62043 /opt/sonarqube
+rm -rf sonarqube-9.7.1.62043.zip
+
+sudo groupadd sonar
+sudo useradd -d /opt/sonarqube -g sonar sonar
+sudo chown sonar:sonar /opt/sonarqube -R
+
+sudo nano /opt/sonarqube/conf/sonar.properties
+
+sonar.jdbc.username=sonar
+sonar.jdbc.password=admin@123
+sonar.jdbc.url=jdbc:postgresql://localhost:5432/sonarqube
+
+
+sudo nano /etc/systemd/system/sonar.service
+[Unit]
+Description=SonarQube service
+After=syslog.target network.target
+[Service]
+Type=forking
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+User=sonar
+Group=sonar
+Restart=always
+LimitNOFILE=65536
+LimitNPROC=4096
+[Install]
+WantedBy=multi-user.target
+
+sudo nano /etc/sysctl.conf    # Add below lines at eend of the file
+vm.max_map_count=262144
+fs.file-max=65536
+ulimit -n 65536
+ulimit -u 4096
+
+reboot
+
+sudo systemctl enable sonar
+sudo systemctl start sonar
+sleep 2
+sudo systemctl status sonar --no-pager
+

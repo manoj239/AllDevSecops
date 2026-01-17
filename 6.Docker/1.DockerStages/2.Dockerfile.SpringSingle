@@ -1,0 +1,6 @@
+FROM maven:3.6.3-openjdk-11 AS build-stage
+WORKDIR /app
+COPY pom.xml .
+COPY src ./src
+RUN mvn package -DskipTests
+CMD ["java", "-jar", "spring-petclinic-2.7.3.jar"]

@@ -1,0 +1,32 @@
+apt update && sudo apt install openjdk-11-jdk unzip jq net-tools tree maven && curl https://get.docker.com | sudo bash
+usermod -a -G docker adminsree
+cd /usr/local/bin
+wget https://releases.hashicorp.com/terraform/1.13.2/terraform_1.13.2_linux_amd64.zip
+wget https://releases.hashicorp.com/packer/1.14.2/packer_1.14.2_linux_amd64.zip
+ll
+unzip terraform
+rm -rf terr
+unzip packer1.9.8_
+rm -rf *.zip
+ll
+cd
+terraform version
+packer version
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+sudo apt install software-properties-common
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible
+cd /etc/ansible
+ll 
+cat ansible.vfg
+mv ansible.vfg ansible.vfg_ld
+ansible-config init --disabled > ansible.cfg
+nano ansible.cfg
+give host_key_checking=falsee
+wget https://github.com/aquasecurity/trivy/releases/download/v0.53.0/trivy_0.53.0_Linux-64bit.deb
+dpkg -i trivy_0.53.0_Linux-64bit.deb
+
+

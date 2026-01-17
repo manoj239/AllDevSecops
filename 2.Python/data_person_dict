@@ -1,0 +1,10 @@
+person = {
+    'name' : 'Manoj',
+    'age'  : 25,
+    'location' : 'MTM',
+    'hobbies' : [
+      'Movies' ,
+      'Hiking' ,
+      'Swimming' 
+    ]
+}

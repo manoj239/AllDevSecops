@@ -1,0 +1,8 @@
+{
+    "region": "us-east-1",
+    "source_ami": "ami-0e001c9271cf7f3b9",
+    "instance_type": "t2.medium",
+    "vpc_id": "vpc-0911328931c9f14fa",
+    "subnet_id": "subnet-08daa03909db2568d",
+    "ami_name": "DevSecOpsB43"
+}

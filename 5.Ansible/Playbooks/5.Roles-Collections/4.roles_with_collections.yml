@@ -1,0 +1,96 @@
+#Install below before executing the playbook
+#ansible-galaxy collection install community.mysql
+#ansible-galaxy install geerlingguy.mysql --force
+#ansible-galaxy collection install nginxinc.nginx_core
+#Default password can be updated in /.ansible/roles/geerlingguy.mysql/defaults/main.yml
+#mysql_root_password: India@123456
+#mysql_root_password_update: true
+#ansible-vault encrypt_string 'India@123456' --name 'bob_db_password'
+#ansible-vault encrypt_string 'India@123456' --name 'mysql_root_password_new'
+---
+  - name: Play for Install MySQL on DBServers
+    hosts: pvt
+    gather_facts: yes #yes or no
+    become: yes
+    become_user: root
+    roles:
+     - geerlingguy.mysql #Role not part of Collection
+     - nginx #Role Part of nginxinc.nginx_core
+
+    collections:
+      - community.mysql
+      - nginxinc.nginx_core
+    vars:
+     bob_db_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          38383463633530366163646461653531323732363264383034363231636365643963343766393437
+          3933663132316164366664613031643534646261383665340a316535326538623330303264373330
+          66646562326464623430633737613538663163613432346666326135366631636337376232623064
+          3633383638346531640a303763313631373963346532663761326466316437363733393232666265
+          3832
+     mysql_root_password_new: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33303166626365393134356436366430386565633365613431633863393366353164386566626335
+          3730616361346361373236633463653735386438356632660a373965613436303832346131616234
+          35646363396661386561633034623838333138623337386564646333383465653130313661623638
+          6339613331643666660a663366633338623238643862353534343737393361373338393532393561
+          6665
+    tasks:
+      - name: Create a new database with name 'superstar'
+        community.mysql.mysql_db: #Module Part of mysql Collection
+         name: superstar
+         state: present
+         login_user: root
+         login_password: "{{ mysql_root_password }}"
+      - name: Create a new database with name 'megastar'
+        community.mysql.mysql_db: #Module Part of mysql Collection
+         name: megastar
+         state: present
+         login_user: root
+         login_password: "{{ mysql_root_password }}"
+      - name: Create a multiple Databases with name myflixdb rebelstar powerstar
+        community.mysql.mysql_db: #Module Part of mysql Collection
+         name: "{{ item }}"
+         state: present
+         login_user: root
+         login_password: "{{ mysql_root_password }}"
+        with_items:
+        - rebelstar 
+        - powerstar 
+        - myflixdb
+      - name: check if Databases are Created
+        shell: mysql -e 'SHOW DATABASES;'
+        register: dblist
+
+      - debug:
+         var: dblist.stdout
+
+      - name: Copy sql file to servers
+        copy: >
+          src="{{ item }}"
+          dest=/tmp/
+          owner=root
+          group=root
+          mode=0644
+        with_items:
+        - myflixdb.sql
+        - superstardb.sql
+        - megastardb.sql
+        - generic.sql 
+
+      - name: Create database user with name 'bob' and password from vault' with all database privileges
+        community.mysql.mysql_user:
+         name: bob
+         password: "{{ bob_db_password }}"
+         priv: '*.*:ALL'
+         state: present
+      - name: Import file.sql to myflixdb rebelstar powerstar
+        shell: mysql -u root "{{ item }}" < /tmp/generic.sql
+        with_items:
+        - rebelstar 
+        - powerstar 
+        - myflixdb  
+      - name: Import file.sql to superstar
+        shell: mysql -u root superstar < /tmp/superstardb.sql
+      - name: Import file.sql to megastardb
+        shell: mysql -u root megastar < /tmp/megastardb.sql

@@ -1,0 +1,47 @@
+wget -O jfrog-compose-installer.tar.gz https://releases.jfrog.io/artifactory/jfrog-prox/org/artifactory/pro/docker/jfrog-platform-trial-prox/[RELEASE]/jfrog-platform-trial-prox-[RELEASE]-compose.tar.gz
+tar -xvzf jfrog-compose-installer.tar.gz
+cd jfrog-platform-trial-pro*
+sudo ./config.sh
+sudo docker-compose -p trial-pro-rabbitmq -f docker-compose-rabbitmq.yaml up -d
+sudo docker-compose -p trial-pro up -d
+
+
+
+
+sudo apt update -y
+sudo apt install -y ca-certificates curl gnupg lsb-release
+apt install net-tools
+
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt update -y
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+docker --version
+
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker-compose version
+
+wget -O jfrog-compose-installer.tar.gz \
+https://releases.jfrog.io/artifactory/jfrog-prox/org/artifactory/pro/docker/jfrog-platform-trial-prox/7.117.15/jfrog-platform-trial-prox-7.117.15-compose.tar.gz
+
+tar -xvzf jfrog-compose-installer.tar.gz
+cd jfrog-platform-trial-pro*
+
+sudo apt update -y
+sudo apt install -y jq
+
+sudo ./config.sh
+
+sudo docker-compose -p trial-pro up -d
+
+sudo docker-compose -p trial-pro-rabbitmq -f docker-compose-rabbitmq.yaml up -d

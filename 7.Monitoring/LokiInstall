@@ -1,0 +1,36 @@
+apt install unzip
+wget https://github.com/grafana/loki/releases/download/v3.2.0/loki-linux-amd64.zip
+unzip loki-linux-amd64.zip
+rm -rf loki-linux-amd64.zip
+mv loki-linux-amd64 loki
+mv loki /usr/local/bin/
+loki --version
+
+#create user for loki
+sudo useradd --system loki
+sudo mkdir -p /etc/loki /etc/loki/logs
+sudo chown -R loki: /etc/loki
+nano /etc/loki/loki-config.yaml 
+
+sudo nano /etc/systemd/system/loki.service
+
+[Unit]
+Description=Loki service
+After=network.target
+ 
+[Service]
+Type=simple
+User=loki
+ExecStart=/usr/local/bin/loki -config.file /etc/loki/loki-config.yaml
+Restart=on-failure
+RestartSec=20
+StandardOutput=append:/etc/loki/logs/loki.log
+StandardError=append:/etc/loki/logs/loki.log
+ 
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable loki.service
+sudo systemctl start loki
+sudo systemctl status loki

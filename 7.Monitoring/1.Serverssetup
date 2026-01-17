@@ -1,0 +1,39 @@
+For first 2 servers give below code
+    #!/bin/bash
+    apt update && apt install -y unzip net-tools 
+
+For next 2 servers give below code
+#!/bin/bash
+sudo useradd --no-create-home --shell /bin/false node_exporter
+wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz -P /tmp
+cd /tmp
+tar xvf node_exporter-1.8.2.linux-amd64.tar.gz
+sudo cp /tmp/node_exporter-1.8.2.linux-amd64/node_exporter /usr/local/bin/
+sudo chown node_exporter:node_exporter /usr/local/bin/node_exporter
+rm -rf node_exporter-1.8.2.linux-amd64/
+rm -rf node_exporter-1.8.2.linux-amd64.tar.gz
+
+cat <<EOF > /lib/systemd/system/node_exporter.service
+[Unit]
+Description=Node Exporter
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload
+sudo systemctl start node_exporter
+sudo systemctl restart node_exporter
+sudo systemctl enable node_exporter
+sudo systemctl status node_exporter --no-pager
+
+
+To install Node Exporter, I download the binary from GitHub, extract it, copy it to /usr/local/bin,
+create a dedicated user, and then configure it as a systemd service so it always runs in the background. 
+By default, it listens on port 9100 and exposes Linux system metrics that Prometheus can scrape.

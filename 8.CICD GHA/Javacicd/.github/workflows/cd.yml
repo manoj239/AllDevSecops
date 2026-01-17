@@ -1,0 +1,50 @@
+name: Java CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["Java CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  cd:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      # 1️⃣ Download artifact from CI workflow
+      - name: Download artifact from CI workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir artifact
+
+          ARTIFACT_ID=$(curl -s \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/artifacts \
+            | jq -r '.artifacts[] | select(.name=="java-artifact") | .id')
+
+          curl -L \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/$REPO/actions/artifacts/$ARTIFACT_ID/zip \
+            -o artifact/artifact.zip
+
+          unzip artifact/artifact.zip -d artifact
+
+          echo "Downloaded files:"
+          ls -l artifact
+
+      # 2️⃣ Upload artifact to JFrog (FIXED PATH)
+      - name: Upload artifact to JFrog using Access Token
+        run: |
+          curl -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" \
+          -T artifact/*.jar \
+          "${{ secrets.JFROG_URL }}/artifactory/libs-release-local/"

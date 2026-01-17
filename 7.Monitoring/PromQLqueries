@@ -1,0 +1,13 @@
+up{job='prometheus'}  #Shows whether the Prometheus scrape target is up.
+up{job='prometheus'} ==1 #up = 1 → target is healthy and responding.
+node_cpu_seconds_total  #Exposes CPU usage time in seconds per mode (idle, user, system, iowait, etc.).
+node_cpu_seconds_total{ job=~"client1|client2",mode="idle"}
+node_cpu_seconds_total{ job=~"client1|client2",mode="idle"} > 950
+node_memory_MemFree_bytes{ job=~"client1|client2" }/ 1024 /1024
+node_memory_MemFree_bytes{ job=~"client1|client2" }/ 1024 /1024 < 400
+
+
+
+I use the up metric to check if targets are healthy. For CPU, I look at node_cpu_seconds_total with mode 
+filters like idle to measure usage, and for memory I check node_memory_MemFree_bytes after converting to 
+MB. I can add conditions like < 400 to trigger alerts when free memory is low

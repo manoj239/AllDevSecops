@@ -1,0 +1,9 @@
+#!/bin/bash
+NATURALSTAR="NANI"
+ICONSTAR="ALLUARJUN" 
+echo $MEGASTAR
+echo $REBELSTAR
+echo $NATURALSTAR
+echo $ICONSTAR
+
+

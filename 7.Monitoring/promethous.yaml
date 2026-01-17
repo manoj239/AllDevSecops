@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s #pulling metrics for  secs
+    static_configs:
+    - targets: ['localhost:9090']
+  - job_name: 'AppServers'
+    scrape_interval: 5s
+    static_configs:
+    - targets: ['ec2-13-216-3-249.compute-1.amazonaws.com:9100','ec2-44-222-128-72.compute-1.amazonaws.com:9100']
+      labels:
+        group: 'production'
+        batch: 'B43'
+        env: 'prod'
+
+  - job_name: 'client1'
+    static_configs:
+      - targets: ['ec2-13-216-3-249.compute-1.amazonaws.com:9100']
+        labels:
+          instance : 'appserver1'
+          batch    : 'B43'
+          env      : 'prod'
+  - job_name: 'client2'
+    static_configs:
+      - targets: ['ec2-44-222-128-72.compute-1.amazonaws.com:9100']
+        labels:
+          instance : 'appserver2'
+          batch    : 'B43'
+          env      : 'prod'
+
+  - job_name: 'Docker_Hosts'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['ec2-13-216-3-249.compute-1.amazonaws.com:9323','ec2-44-222-128-72.compute-1.amazonaws.com:9323']
+
+
+In Prometheus, each job defines which targets to scrape and how often. For example, I scrape Prometheus 
+itself every 5s on port 9090, Node Exporter on servers at 9100, and Docker metrics at 9323. I also add 
+custom labels like env=prod or instance=appserver1 so I can easily filter metrics in Grafana or 
+PromQL queries.

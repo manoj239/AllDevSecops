@@ -1,0 +1,15 @@
+apt install -y unzip
+wget https://github.com/grafana/loki/releases/download/v3.2.0/promtail-linux-amd64.zip
+unzip promtail-linux-amd64.zip
+rm -rf promtail-linux-amd64.zip
+mv promtail-linux-amd64 /usr/local/bin/promtail
+promtail --version
+
+sudo useradd --system promtail
+usermod -a -G adm promtail
+
+nano /usr/local/bin/promtail-config.yaml
+
+sudo nano /etc/systemd/system/promtail.service
+
+systemctl daemon-reload && service promtail stop &&  service promtail start && service promtail status

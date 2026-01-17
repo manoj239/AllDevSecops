@@ -1,0 +1,216 @@
+db.custdata.insertMany([
+    {
+        "job": "Horticultural consultant",
+        "company": "Anderson, Armstrong and Mccormick",
+        "ssn": "460-44-2780",
+        "residence": "9625 Elizabeth Pines\nJacobshire, WY 52200",
+        "current_location": [
+            "-57.793144",
+            "-13.133653"
+        ],
+        "blood_group": "O-",
+        "website": [
+            "https://hanna.com/"
+        ],
+        "username": "wolfekimberly",
+        "name": "Sharon Daniels",
+        "sex": "F",
+        "address": "PSC 4244, Box 9855\nAPO AP 02002",
+        "mail": "bradleysanchez@gmail.com",
+        "birthdate": "1963-03-14"
+    },
+    {
+        "job": "Wellsite geologist",
+        "company": "Yoder-Jacobs",
+        "ssn": "674-64-1884",
+        "residence": "8518 Chandler Alley Apt. 029\nEast Benjaminburgh, KY 16044",
+        "current_location": [
+            "37.865727",
+            "154.994906"
+        ],
+        "blood_group": "O+",
+        "website": [
+            "http://murillo.org/"
+        ],
+        "username": "ztran",
+        "name": "Brandon Norton",
+        "sex": "M",
+        "address": "Unit 6910 Box 7010\nDPO AE 33954",
+        "mail": "kimberlywilliams@hotmail.com",
+        "birthdate": "1984-10-03"
+    },
+    {
+        "job": "Health promotion specialist",
+        "company": "Cummings, Tyler and Durham",
+        "ssn": "027-30-5275",
+        "residence": "USS Delacruz\nFPO AA 03250",
+        "current_location": [
+            "-3.9942585",
+            "70.242344"
+        ],
+        "blood_group": "O+",
+        "website": [
+            "http://www.jones.info/"
+        ],
+        "username": "lmiller",
+        "name": "Christopher Hill",
+        "sex": "M",
+        "address": "2372 Patrick Mission Apt. 500\nStevenbury, PR 30922",
+        "mail": "peteranderson@yahoo.com",
+        "birthdate": "2018-09-28"
+    },
+    {
+        "job": "Advertising account planner",
+        "company": "Morales, Gay and Robertson",
+        "ssn": "180-18-6083",
+        "residence": "798 Nancy Lights\nDrakefort, ND 25884",
+        "current_location": [
+            "88.8367315",
+            "-54.305151"
+        ],
+        "blood_group": "AB+",
+        "website": [
+            "https://bailey.com/",
+            "http://www.walls.net/",
+            "https://www.pennington.com/",
+            "http://www.stewart-george.org/"
+        ],
+        "username": "mark44",
+        "name": "Laura Houston",
+        "sex": "F",
+        "address": "470 Lewis Wall\nMeganhaven, MN 36102",
+        "mail": "tthompson@hotmail.com",
+        "birthdate": "1961-04-13"
+    },
+    {
+        "job": "Solicitor",
+        "company": "Nguyen PLC",
+        "ssn": "508-61-1322",
+        "residence": "161 Austin Extension\nNorth Erica, SD 35517",
+        "current_location": [
+            "16.9496995",
+            "-3.443230"
+        ],
+        "blood_group": "B-",
+        "website": [
+            "https://www.meyer-hernandez.biz/",
+            "https://www.cruz-rodriguez.com/"
+        ],
+        "username": "parkerlawrence",
+        "name": "Melinda Hudson",
+        "sex": "F",
+        "address": "51842 Benjamin Common Suite 234\nDanielleborough, NE 57105",
+        "mail": "mary30@gmail.com",
+        "birthdate": "1924-02-02"
+    },
+    {
+        "job": "Scientist, marine",
+        "company": "Barnett, Mcdaniel and Richardson",
+        "ssn": "569-25-7010",
+        "residence": "30298 Elizabeth Well Apt. 970\nSpencerland, CT 77241",
+        "current_location": [
+            "16.6207405",
+            "-31.060386"
+        ],
+        "blood_group": "O+",
+        "website": [
+            "http://hoffman-salazar.biz/",
+            "https://sharp-murray.com/",
+            "http://www.murphy-dougherty.com/",
+            "http://shields.info/"
+        ],
+        "username": "umedina",
+        "name": "Monica Cox",
+        "sex": "F",
+        "address": "3234 Mary Center Apt. 236\nWest Graceberg, WV 97302",
+        "mail": "nancymiller@hotmail.com",
+        "birthdate": "1948-10-20"
+    },
+    {
+        "job": "Journalist, magazine",
+        "company": "Mcmahon-Booth",
+        "ssn": "314-56-3292",
+        "residence": "571 John Knolls\nJeffreystad, MA 45045",
+        "current_location": [
+            "-80.0412585",
+            "55.817456"
+        ],
+        "blood_group": "O+",
+        "website": [
+            "http://rhodes.com/",
+            "http://www.adams.info/",
+            "http://brown-hicks.info/",
+            "http://www.lopez-burton.com/"
+        ],
+        "username": "patricia26",
+        "name": "Robert Buchanan",
+        "sex": "M",
+        "address": "065 Norma Rapids\nAndersonhaven, NY 88597",
+        "mail": "stevensedward@hotmail.com",
+        "birthdate": "1981-11-07"
+    },
+    {
+        "job": "Scientist, product/process development",
+        "company": "Montoya-Allen",
+        "ssn": "300-10-2646",
+        "residence": "27685 Williams Streets\nParkerborough, FM 85719",
+        "current_location": [
+            "60.1875225",
+            "-163.960784"
+        ],
+        "blood_group": "A-",
+        "website": [
+            "https://fernandez-phillips.com/",
+            "http://www.gilmore.org/"
+        ],
+        "username": "stephen74",
+        "name": "Michelle Schultz",
+        "sex": "F",
+        "address": "PSC 5654, Box 4850\nAPO AA 29008",
+        "mail": "dennisholly@hotmail.com",
+        "birthdate": "1952-10-27"
+    },
+    {
+        "job": "Site engineer",
+        "company": "Wallace-Morgan",
+        "ssn": "064-51-5419",
+        "residence": "536 April Plaza Suite 970\nThomasside, TN 85842",
+        "current_location": [
+            "-83.1247865",
+            "-130.418902"
+        ],
+        "blood_group": "A-",
+        "website": [
+            "https://www.elliott-torres.org/",
+            "http://green-kelly.com/",
+            "http://www.edwards.com/"
+        ],
+        "username": "nlucas",
+        "name": "Jessica Shaw",
+        "sex": "F",
+        "address": "426 Rodriguez Fork\nDouglaston, GA 74988",
+        "mail": "nross@hotmail.com",
+        "birthdate": "2006-04-15"
+    },
+    {
+        "job": "Runner, broadcasting/film/video",
+        "company": "Dunlap-Reed",
+        "ssn": "096-44-1404",
+        "residence": "34544 Heather Ridges Apt. 166\nPort Andrewton, KY 09586",
+        "current_location": [
+            "7.1807245",
+            "-126.743748"
+        ],
+        "blood_group": "B-",
+        "website": [
+            "https://www.fuller-ewing.biz/",
+            "https://thomas-smith.com/"
+        ],
+        "username": "lucerochad",
+        "name": "Carmen Jackson",
+        "sex": "F",
+        "address": "589 Xavier Cliff Apt. 248\nBanksmouth, UT 78210",
+        "mail": "lmoore@hotmail.com",
+        "birthdate": "1985-02-09"
+    }
+])

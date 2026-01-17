@@ -1,0 +1,42 @@
+# Set variables
+RG=AZB48ADO
+LOCATION=eastus
+VNET_NAME=${RG}-vNET1
+SUBNET_NAME=${RG}-Subnet-1
+NSG_NAME=${RG}_NSG1
+VM_SIZE=Standard_B2ms
+USERNAME=adminsree
+PASSWORD="India@123456"
+IMAGE=Ubuntu2204
+
+# Create Resource Group
+az group create --location $LOCATION -n $RG
+
+# Create Virtual Network and Subnet
+az network vnet create -g $RG -n $VNET_NAME --address-prefix 10.1.0.0/16 \
+  --subnet-name $SUBNET_NAME --subnet-prefix 10.1.1.0/24 -l $LOCATION
+
+# Create Network Security Group
+az network nsg create -g $RG -n $NSG_NAME --location $LOCATION
+
+# Create NSG Rule to Allow All Traffic
+az network nsg rule create -g $RG --nsg-name $NSG_NAME -n ${NSG_NAME}_RULE1 --priority 100 \
+  --source-address-prefixes '*' --source-port-ranges '*' \
+  --destination-address-prefixes '*' --destination-port-ranges '*' \
+  --access Allow --protocol Tcp --description "Allowing All Traffic For Now"
+
+# Create SONARQUBE VM
+az vm create --resource-group $RG --name SONARQUBE --image $IMAGE \
+  --vnet-name $VNET_NAME --subnet $SUBNET_NAME \
+  --admin-username $USERNAME --admin-password $PASSWORD \
+  --size $VM_SIZE --storage-sku StandardSSD_LRS \
+  --nic-delete-option Delete --os-disk-delete-option Delete \
+  --nsg $NSG_NAME
+
+# Create JFROG VM
+az vm create --resource-group $RG --name JFROG --image $IMAGE \
+  --vnet-name $VNET_NAME --subnet $SUBNET_NAME \
+  --admin-username $USERNAME --admin-password $PASSWORD \
+  --size $VM_SIZE --storage-sku StandardSSD_LRS \
+  --nic-delete-option Delete --os-disk-delete-option Delete \
+  --nsg $NSG_NAME

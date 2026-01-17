@@ -1,0 +1,56 @@
+#Below shhould be configure on clients.
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://ec2-3-229-120-88.compute-1.amazonaws.com:3100/loki/api/v1/push
+
+scrape_configs:
+- job_name: systemlogs
+  static_configs:
+  - targets:
+    - localhost
+    labels:
+      job: varlogs
+      __path__: /var/log/*log
+      stream: stdout
+- job_name: nginxlogs
+  static_configs:
+  - targets:
+    - localhost
+    labels:
+      job: nginx-access-logs
+      __path__: /var/log/nginx/access.log
+  - targets:
+    - localhost
+    labels:
+      job: nginx-error-logs
+      __path__: /var/log/nginx/error.log
+- job_name: container-logs
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: dockerlogs
+      host: docker
+      __path__: /var/lib/docker/containers/*/*-json.log
+
+
+#nano /usr/local/bin/promtail-config.yaml
+
+docker plugin install  grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+docker plugin enable loki
+docker plugin list
+
+docker run --rm -d --log-driver=loki \
+    --log-opt loki-url="http://prom.awsb63.xyz:3100/loki/api/v1/push" \
+    --log-opt loki-retries=5 \
+    --log-opt loki-batch-size=400 \
+    --name demoapp1 -p 8000:80 \
+    sreeharshav/testcontainer:v1
+
+

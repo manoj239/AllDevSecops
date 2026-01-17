@@ -1,0 +1,94 @@
+{
+    "Vpcs": [
+      {
+        "OwnerId": "442426885544",
+        "InstanceTenancy": "default",
+        "CidrBlockAssociationSet": [
+          {
+            "AssociationId": "vpc-cidr-assoc-092a2247ba29d37d7",
+            "CidrBlock": "192.168.0.0/16",
+            "CidrBlockState": {
+              "State": "associated"
+            }
+          }
+        ],
+        "IsDefault": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "On prem"
+          }
+        ],
+        "BlockPublicAccessStates": {
+          "InternetGatewayBlockMode": "off"
+        },
+        "VpcId": "vpc-0601cde052c1f6fb3",
+        "State": "available",
+        "CidrBlock": "192.168.0.0/16",
+        "DhcpOptionsId": "dopt-0a5b287d37ca45902"
+      },
+      {
+        "OwnerId": "442426885544",
+        "InstanceTenancy": "default",
+        "CidrBlockAssociationSet": [
+          {
+            "AssociationId": "vpc-cidr-assoc-03c73e94b554e94b6",
+            "CidrBlock": "10.1.0.0/16",
+            "CidrBlockState": {
+              "State": "associated"
+            }
+          }
+        ],
+        "IsDefault": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "Tears"
+          }
+        ],
+        "BlockPublicAccessStates": {
+          "InternetGatewayBlockMode": "off"
+        },
+        "VpcId": "vpc-0372cdfc362dd0aa8",
+        "State": "available",
+        "CidrBlock": "10.1.0.0/16",
+        "DhcpOptionsId": "dopt-0a5b287d37ca45902"
+      },
+      {
+        "OwnerId": "442426885544",
+        "InstanceTenancy": "default",
+        "CidrBlockAssociationSet": [
+          {
+            "AssociationId": "vpc-cidr-assoc-0175beb85416df38f",
+            "CidrBlock": "172.16.0.0/16",
+            "CidrBlockState": {
+              "State": "associated"
+            }
+          }
+        ],
+        "IsDefault": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "region-vpc-testing"
+          },
+          {
+            "Key": "Owner",
+            "Value": "Sreeharsha Veerapalli"
+          },
+          {
+            "Key": "environment",
+            "Value": "dev"
+          }
+        ],
+        "BlockPublicAccessStates": {
+          "InternetGatewayBlockMode": "off"
+        },
+        "VpcId": "vpc-0c8c27cba967c27ee",
+        "State": "available",
+        "CidrBlock": "172.16.0.0/16",
+        "DhcpOptionsId": "dopt-0a5b287d37ca45902"
+      }
+    ]
+  }
+  

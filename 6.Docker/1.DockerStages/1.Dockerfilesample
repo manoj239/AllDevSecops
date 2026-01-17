@@ -1,0 +1,38 @@
+#FROM python:3.12
+FROM python:3.12-slim
+LABEL author="Sreeharsha Veerapalli" owner_email="itsreeharsha@gmail.com"
+WORKDIR /app
+ENV AWS_ACCESS_KEY_ID=AWS_ACCESS_KEY_ID
+ENV AWS_SECRET_ACCESS_KEY=AWS_SECRET_ACCESS_KEY
+ARG PACKER_VERSION=1.11.2
+ARG TERRAFORM_VERSION=1.9.8
+RUN apt update && apt install -y python3-pip jq net-tools tree unzip
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+ADD templates templates
+ADD https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip packer.zip
+ADD https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip terraform.zip
+RUN unzip packer.zip && mv packer /usr/local/bin && rm packer.zip && rm -f LICENSE.txt
+RUN unzip terraform.zip && mv terraform /usr/local/bin && rm terraform.zip && rm -f LICENSE.txt
+EXPOSE 5555
+COPY main.py main.py
+COPY routers/ routers/
+ENTRYPOINT ["uvicorn", "main:app", "--host", "0.0.0.0"]
+CMD ["--port", "5555"]
+
+#-------------------------------------------------------------------
+    
+git clone https://github.com/SreeVeerDevOps/python-fastapi-docker-public.git fastapi
+FROM python:3.12
+LABEL author="Sreeharsha Veerapalli" email="itsreeharsha@gmail.com"
+WORKDIR /app
+RUN apt update && apt install -y python3-pip jq net-tools tree unzip
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+ADD templates templates
+ADD https://releases.hashicorp.com/packer/1.14.1/packer_1.14.1_linux_amd64.zip packer.zip
+RUN unzip packer.zip && mv packer /usr/local/bin && rm packer.zip
+COPY main.py main.py
+COPY routers/ routers/
+EXPOSE 5555
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5555"]

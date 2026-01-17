@@ -1,0 +1,40 @@
+name: Python CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["Python CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  cd:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+
+    steps:
+      # 1️⃣ Download artifact from CI
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-artifact
+          path: dist
+
+      # 2️⃣ Verify artifact
+      - name: Verify artifact
+        run: |
+          echo "Artifacts found:"
+          ls -l dist
+
+      # 3️⃣ Upload to Nexus (PyPI hosted repo)
+      - name: Upload to Nexus
+        run: |
+          pip install twine
+          twine upload \
+            --repository-url ${{ secrets.NEXUS_URL }}/repository/pypi-hosted/ \
+            -u ${{ secrets.NEXUS_USERNAME }} \
+            -p ${{ secrets.NEXUS_PASSWORD }} \
+            dist/*

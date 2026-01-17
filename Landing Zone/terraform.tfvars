@@ -1,0 +1,5 @@
+region                 = "ap-south-1"
+security_account_email = "srikanthborra48@gmail.com"
+shared_services_email  = "srikanthborra48+wp@gmail.com"
+workload_account_email = "srikanthborra48+wop@gmail.com"
+log_archive_bucket     = "landingzone-log-archive-0054111"

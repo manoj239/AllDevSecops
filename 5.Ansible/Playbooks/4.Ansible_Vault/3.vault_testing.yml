@@ -1,0 +1,99 @@
+#ansible-playbook -i invfile Playbooks/vault_testing.yml -vv --ask-vault-pass
+---
+  - name: Run AWS Cli Commands On All Servers
+    hosts: pvt
+    gather_facts: yes
+    become: yes
+    become_user: root
+    #serial: 3
+    vars:
+      user_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          36373766303762363763393733366565353838306262376266313235356435376233626136383137
+          3839373930396534373635383437303865353331373130310a626331643737623463636537363935
+          62616137333561363730306339643736383561396464366136633535353163343761343162336162
+          6264393036366339370a376637316664643133316663633564613932323963653264653937663934
+          66363036653162643066623137366162363430396637323837353534313161633533
+    tasks:
+       - name: Create .aws folder
+         shell: mkdir -p /root/.aws
+         ignore_errors: yes
+       - name: Copy Encrypted File To /tmp
+         copy:
+           src: /tmp/{{item}} #This Encrypted File Must Be Created Prior To Running The Playbook.
+           dest: /tmp/{{item}}
+           owner: root
+           group: root
+           mode: '0600'
+         with_items:
+         - aws_creds
+        #  - tls.key
+        #  - tls.crt
+       - name: Copy Encrypted Credentials File To .aws folder
+         copy:
+           src: /tmp/aws_creds #This Encrypted File Must Be Created Prior To Running The Playbook.
+           dest: /root/.aws/credentials
+           owner: root
+           group: root
+           mode: '0600'
+       - name: Check S3 Buckets
+         shell: aws s3 ls | cut -d " " -f 3
+         register: buckets
+       - name: Print Bucket Name
+         debug:
+          var: buckets 
+       - name: Get VPCS
+         shell: aws ec2 describe-vpcs | jq ".Vpcs[].VpcId" -r
+         register: vpcs
+       - name: Print VPC ID
+         debug:
+          var: vpcs
+       - name: Install passlib
+         shell: apt install -y python3-passlib        
+       - name: Creating admin "{{item}}"
+         user:
+           name: "{{item}}"
+           state: present
+           comment: Admin User "{{item}}"
+           groups: root
+           shell: /bin/bash
+           group: sudo
+           password: "{{ '%s' | format(user_password) | regex_replace('\n', '') | password_hash('sha512') }}"
+           password_expire_min: 1
+         with_items:
+         - anand
+         - bala
+         - chandra
+         - david
+       - name: Replace Password Authentication To Yes
+         ansible.builtin.lineinfile:
+           path: /etc/ssh/sshd_config
+           regexp: '^PasswordAuthentication no'
+           insertafter: '^#PasswordAuthentication yes'
+           line: 'PasswordAuthentication yes'
+           state: present
+           backup: yes
+         notify:
+         -  Restart SSH Service
+       - name: Remove Include line, valid for Ubuntu 24.04
+         ansible.builtin.lineinfile:
+           path: /etc/ssh/sshd_config
+           state: absent
+           regexp: '^Include'
+           backup: yes
+         when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '24.04'
+         notify:
+         -  Restart SSH Service
+       - name: Insert/Update "Match User" configuration block in /etc/ssh/sshd_config prepending and appending a new line
+         ansible.builtin.blockinfile:
+           path: /etc/ssh/sshd_config
+           append_newline: true
+           prepend_newline: true
+           insertafter: '^#Banner' #insertbefore also can be used.
+           block: |
+             #WELCOME TO DEVSECOPS
+             #BATCH B43
+             #SREEHARSHA
+    handlers:
+      - name: Restart SSH Service
+        shell: service ssh restart

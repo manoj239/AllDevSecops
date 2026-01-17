@@ -1,0 +1,63 @@
+sudo apt update && sudo apt upgrade -y
+
+sudo apt install openjdk-17-jdk -y
+java -version
+
+sudo adduser --system --no-create-home --group --disabled-login sonarqube
+
+sudo apt install unzip -y
+
+cd /tmp
+sudo apt install wget unzip -y
+sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.7.1.62043.zip
+unzip sonarqube-9.7.1.62043.zip
+sudo mv sonarqube-9.7.1.62043 /opt/sonarqube
+sudo chown -R sonarqube:sonarqube /opt/sonarqube
+
+sudo nano /opt/sonarqube/conf/sonar.properties
+sonar.path.data=/opt/sonarqube/data
+
+sudo mkdir -p /opt/sonarqube/data
+sudo chown -R sonarqube:sonarqube /opt/sonarqube/data
+
+sudo nano /etc/systemd/system/sonarqube.service
+
+[Unit]
+Description=SonarQube service
+After=network.target
+
+[Service]
+Type=forking
+
+ExecStart=/opt/sonarqube/bin/linux-x86-64/sonar.sh start
+ExecStop=/opt/sonarqube/bin/linux-x86-64/sonar.sh stop
+User=sonarqube
+Group=sonarqube
+Restart=always
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target
+
+sudo systemctl daemon-reload
+sudo systemctl enable sonarqube
+sudo systemctl start sonarqube
+sudo systemctl status sonarqube
+
+sudo ufw allow 9000/tcp
+sudo ufw status
+
+curl -I http://localhost:9000
+sudo ufw enable
+sudo ufw allow 9000/tcp
+sudo ufw status
+
+sudo apt install -y wget apt-transport-https gnupg lsb-release
+wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+sudo apt update
+sudo apt install -y trivy
+trivy --version
+
+sudo apt install -y firefox wget xvfb jq

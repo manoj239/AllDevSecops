@@ -1,0 +1,18 @@
+#Below shhould be configure on clients.
+[Unit]
+Description=Promtail service
+After=network.target
+
+[Service]
+Type=simple
+User=promtail
+Environment="HOSTNAME=%H"
+ExecStart=/usr/local/bin/promtail -config.file /usr/local/bin/promtail-config.yaml -config.expand-env=true
+
+[Install]
+WantedBy=multi-user.target
+
+
+#sudo nano /etc/systemd/system/promtail.service
+#systemctl daemon-reload && service promtail stop &&  service promtail start && service promtail status
+
