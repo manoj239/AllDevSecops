@@ -112,9 +112,8 @@ When we give git init, .git hidden folder will be created and in it hooks will b
 If there is any sensitive data, it should not be commited.
 
 Git hooks:In .git folder, we can see hooks (pre-commmit, etc), it will tell, what should do after commit, after merge etc.
-Developers are having more response time. like they dont want to commit sesitive data to Git by default. Now using this shift left approach, we use githooks anf let us put in precommits.
+Developers are having more response time. like they dont want to commit sesitive data to Git by default. Now using this shift left approach, we use githooks and let us put in precommits.
 **By using this shift left approach, we avoid or stop the errors(like sending sensitive data). Fir that give below command, a hook name(pre-commit) will create
         #git secrets --install
 
 Before commiting to repo, as a developer or Devops engineer, we should scan at local desktop and remove  the errors, and we need to push 
-Need to see this topic again,
