@@ -119,7 +119,8 @@ as it create seperate state files for each account. So now create another worksp
 
 ⚠️ Limitations / Gotchas
         Workspaces are great for small sets of environments (dev, qa, prod).
-        But if you have many accounts or complex infra, using separate backends (one per account) or terragrunt is often a better practice.
+        But if you have many accounts or complex infra, using separate backends (one per account) or 
+        terragrunt is often a better practice.
         Still, for quick setups and customer-specific infra, workspaces are very handy.
 👉 So, the main usage of workspaces:“To isolate Terraform state files for multiple environments/accounts 
 while reusing the same infrastructure code.”

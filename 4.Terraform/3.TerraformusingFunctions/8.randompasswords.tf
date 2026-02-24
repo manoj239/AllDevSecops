@@ -1,7 +1,6 @@
 resource "aws_s3_bucket" "devopspracticestatefilenew1" {
   provider = aws.ohio
   bucket   = "skrmanojku"
-  #
   tags = {
     Name        = "Skrmanojku"
     Environment = "var.environment"
