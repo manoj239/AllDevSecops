@@ -1,0 +1,82 @@
+name: Java CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["Java CI Pipeline"]
+    types: [completed]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production   # ✅ Manual approval gate
+
+    steps:
+      # 1️⃣ Download artifact
+      - name: Download CI artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir artifact
+          ARTIFACT_ID=$(curl -s -H "Authorization: Bearer $GH_TOKEN" \
+            https://api.github.com/repos/$REPO/actions/runs/$RUN_ID/artifacts \
+            | jq -r '.artifacts[] | select(.name=="java-artifact") | .id')
+
+          curl -L -H "Authorization: Bearer $GH_TOKEN" \
+            https://api.github.com/repos/$REPO/actions/artifacts/$ARTIFACT_ID/zip \
+            -o artifact/artifact.zip
+
+          unzip artifact/artifact.zip -d artifact
+
+      # 2️⃣ Upload to Artifactory
+      - name: Upload JAR to JFrog
+        run: |
+          curl -H "Authorization: Bearer ${{ secrets.JFROG_ACCESS_TOKEN }}" \
+          -T artifact/*.jar \
+          "${{ secrets.JFROG_URL }}/artifactory/libs-release-local/myapp.jar"
+
+      # 3️⃣ Deploy to GREEN environment
+      - name: Deploy to GREEN EC2
+        run: |
+          ssh ec2-user@${{ secrets.GREEN_EC2_IP }} "
+            sudo systemctl stop myapp || true
+            aws s3 cp s3://artifactory-mirror/myapp.jar /opt/myapp/
+            sudo systemctl start myapp
+          "
+
+      # 4️⃣ Health check
+      - name: Health Check (GREEN)
+        run: |
+          curl -f http://${{ secrets.GREEN_EC2_IP }}:8080/health
+
+      # 5️⃣ Switch Traffic (Blue → Green)
+      - name: Switch Load Balancer Target
+        run: |
+          aws elbv2 modify-listener \
+            --listener-arn ${{ secrets.LB_LISTENER_ARN }} \
+            --default-actions Type=forward,TargetGroupArn=${{ secrets.GREEN_TG_ARN }}
+
+      # 6️⃣ Optional: Stop BLUE
+      - name: Stop BLUE environment
+        run: |
+          ssh ec2-user@${{ secrets.BLUE_EC2_IP }} "sudo systemctl stop myapp"
+
+Canary Deployment Variant (Optional)
+aws elbv2 modify-listener \
+--default-actions '[
+  {
+    "Type":"forward",
+    "ForwardConfig":{
+      "TargetGroups":[
+        {"TargetGroupArn":"BLUE-TG","Weight":90},
+        {"TargetGroupArn":"GREEN-TG","Weight":10}
+      ]
+    }
+  }
+]'
+``

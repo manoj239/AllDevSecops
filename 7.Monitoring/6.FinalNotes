@@ -14,7 +14,8 @@ Absolutely! Here’s your **final consolidated observability notes** in a clean,
 * Common targets: Node Exporter, cAdvisor, MySQL Exporter.
 
 Interview line:
-"Prometheus collects and stores metrics, scrapes targets on intervals, and lets me query them using PromQL."
+"Prometheus collects and stores metrics, scrapes targets on intervals, and lets me query them using 
+PromQL."
 
 ---
 
@@ -25,7 +26,8 @@ Interview line:
 * Prometheus scrapes Node Exporter for system-level metrics.
 
 Interview line:
-"Node Exporter is an agent that collects Linux system metrics and exposes them to Prometheus on port 9100."
+"Node Exporter is an agent that collects Linux system metrics and exposes them to Prometheus on port
+ 9100."
 
 ---
 
@@ -38,7 +40,8 @@ Interview line:
 * Typically runs on port 3100.
 
 Interview line:
-"Loki is a log aggregation system that stores logs efficiently by indexing only labels, and we query logs using LogQL."
+"Loki is a log aggregation system that stores logs efficiently by indexing only labels, and we query 
+logs using LogQL."
 
 ---
 
@@ -50,7 +53,8 @@ Interview line:
 * Pushes logs to Loki.
 
 Interview line:
-"Promtail is the log collector that reads server or container logs, labels them, and pushes them into Loki."
+"Promtail is the log collector that reads server or container logs, labels them, and pushes them into
+ Loki."
 
 ---
 
@@ -62,7 +66,8 @@ Interview line:
 * Does not store data, only queries and visualizes.
 
 Interview line:
-"Grafana visualizes both metrics and logs from Prometheus and Loki, providing a single observability dashboard."
+"Grafana visualizes both metrics and logs from Prometheus and Loki, providing a single 
+observability dashboard."
 
 ---
 
@@ -119,5 +124,7 @@ Interview explanation:
 
 ## Final Interview Summary
 
-"In the observability stack, Prometheus with Node Exporter handles metrics, and Loki with Promtail handles logs. Prometheus scrapes metrics on port 9100, Loki receives logs from Promtail, and Grafana visualizes both metrics and logs. Together, this provides full observability including dashboards and alerts."
-
+"In the observability stack, Prometheus with Node Exporter handles metrics, and Loki with Promtail 
+handles logs. Prometheus scrapes metrics on port 9100, Loki receives logs from Promtail, and Grafana 
+visualizes both metrics and logs. Together, this provides full observability including dashboards 
+and alerts."

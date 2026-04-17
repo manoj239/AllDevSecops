@@ -135,7 +135,8 @@ jobs:
                        -T "$JAR_PATH" \
             "$TARGET_URL"
 
-deployment role is assumed by the Github actions, automation role is  assumed by the SSM docuemtns
+deployment role is assumed by the Github actions, automation role is  assumed by the SSM
+docuemtns
 
 1)First created the Github runner role in monitoring deploy account
 
