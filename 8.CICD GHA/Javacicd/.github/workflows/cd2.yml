@@ -66,17 +66,21 @@ jobs:
         run: |
           ssh ec2-user@${{ secrets.BLUE_EC2_IP }} "sudo systemctl stop myapp"
 
-Canary Deployment Variant (Optional)
-aws elbv2 modify-listener \
---default-actions '[
-  {
-    "Type":"forward",
-    "ForwardConfig":{
-      "TargetGroups":[
-        {"TargetGroupArn":"BLUE-TG","Weight":90},
-        {"TargetGroupArn":"GREEN-TG","Weight":10}
-      ]
-    }
-  }
+      
+# ✅ Canary or Blue/Green switch
+      - name: Switch Traffic (Canary 10%)
+        run: |
+          aws elbv2 modify-listener \
+          --listener-arn ${{ secrets.LB_LISTENER_ARN }} \
+          --default-actions '[
+            {
+              "Type":"forward",
+              "ForwardConfig":{
+                "TargetGroups":[
+                  {"TargetGroupArn":"${{ secrets.BLUE_TG_ARN }}","Weight":90},
+                  {"TargetGroupArn":"${{ secrets.GREEN_TG_ARN }}","Weight":10}
+                ]
+              }
+            }
+
 ]'
-``
