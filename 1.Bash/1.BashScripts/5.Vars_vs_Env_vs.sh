@@ -5,5 +5,3 @@ echo $MEGASTAR
 echo $REBELSTAR
 echo $NATURALSTAR
 echo $ICONSTAR
-
-

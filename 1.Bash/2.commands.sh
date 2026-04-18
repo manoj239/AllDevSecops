@@ -32,4 +32,3 @@ echo "$USERNAME:$PASSWORD" | sudo chpasswd #To set the password to the user
 find / -name '*.zip' -size +10M -size -100M | xargs du -ch
 find / -name '*.zip' -size +10M -size -100M | xargs rm -rf
 find / -path  $(pwd) -prune -o name '*.zip' -size 10m -size -100M
-

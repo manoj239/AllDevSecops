@@ -40,9 +40,6 @@ find / -name '*.zip' -size +10M -size -100M | xargs du -ch
 find / -name '*.zip' -size +10M -size -100M | xargs rm -rf
 
 
-
-
-
 #!/bin/bash
 read -p "Enter the minimum Size : " MIN_SIZE
 read -p "Enter the maximum Size : " MAX_SIZE
@@ -50,10 +47,8 @@ read -p "Enter the path : "  FILE_PATH
 find $FILE_PATH -name "*.zip" -size +${MIN_SIZE}M -size -$(MAX_SIZE)M | xargs du -ch
 
 
-
 #/bin/bash
 find $1 -name "*.zip" -size +${2}M -size -${3}M | xargs du -ch
-
 
 #Find the files which are modified before 5 days
 Find  files  modified more than  7  days ago in the current dirrectory and it subdirectories:
