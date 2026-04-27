@@ -8,4 +8,3 @@ module "alpha_vpc_1" {
   azs                = var.azs
   owner              = var.owner
 }
-
